@@ -69,7 +69,7 @@
   {% set partitioned_by = config.get('partitioned_by', default=none) %}
   {% set target_relation = this.incorporate(type='table') %}
   {% set existing_relation = load_relation(this) %}
-  {% set tmp_relation = make_temp_relation(this) %}
+  {% set tmp_relation = make_temp_relation(this, suffix='__dbt_tmp') %}
 
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
@@ -83,7 +83,7 @@
       {% do adapter.drop_relation(existing_relation) %}
       {% set build_sql = create_table_as(False, target_relation, sql) %}
   {% elif partitioned_by is not none and strategy == 'insert_overwrite' %}
-      {% set tmp_relation = make_temp_relation(target_relation) %}
+      {% set tmp_relation = make_temp_relation(target_relation, suffix='__dbt_tmp') %}
       {% if tmp_relation is not none %}
           {% do adapter.drop_relation(tmp_relation) %}
       {% endif %}
@@ -92,7 +92,7 @@
       {% set build_sql = incremental_insert(tmp_relation, target_relation) %}
       {% do to_drop.append(tmp_relation) %}
   {% else %}
-      {% set tmp_relation = make_temp_relation(target_relation) %}
+      {% set tmp_relation = make_temp_relation(target_relation, suffix='__dbt_tmp') %}
       {% if tmp_relation is not none %}
           {% do adapter.drop_relation(tmp_relation) %}
       {% endif %}
