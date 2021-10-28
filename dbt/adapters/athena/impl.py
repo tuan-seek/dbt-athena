@@ -65,6 +65,10 @@ class AthenaAdapter(SQLAdapter):
                 s3_bucket = s3_resource.Bucket(bucket_name)
                 s3_bucket.objects.filter(Prefix=prefix).delete()
 
+    @avaiable
+    def unique_identity(self, prefix, length=8):
+        return f"{prefix}_{str(uuid4())[:length]}"
+
     @available
     def clean_up_table(
         self, database_name: str, table_name: str
