@@ -11,6 +11,8 @@ from pyathena.model import AthenaQueryExecution
 from pyathena.cursor import Cursor
 from pyathena.error import ProgrammingError, OperationalError
 from pyathena.formatter import Formatter
+from pyathena.util import RetryConfig
+
 # noinspection PyProtectedMember
 from pyathena.formatter import _DEFAULT_FORMATTERS, _escape_hive, _escape_presto
 
@@ -28,14 +30,16 @@ class AthenaCredentials(Credentials):
     work_group: Optional[str] = None
     aws_profile_name: Optional[str] = None
     poll_interval: float = 1.0
-    _ALIASES = {
-        "catalog": "database"
-    }
-    # TODO Add pyathena.util.RetryConfig ?
+    _ALIASES = {"catalog": "database"}
+    num_retries: Optional[int] = 5
 
     @property
     def type(self) -> str:
         return "athena"
+
+    @property
+    def unique_field(self):
+        return self.host
 
     def _connection_keys(self) -> Tuple[str, ...]:
         return "s3_staging_dir", "work_group", "region_name", "database", "schema", "poll_interval", "aws_profile_name"
@@ -115,7 +119,15 @@ class AthenaConnectionManager(SQLConnectionManager):
                 cursor_class=AthenaCursor,
                 formatter=AthenaParameterFormatter(),
                 poll_interval=creds.poll_interval,
-                profile_name=creds.aws_profile_name
+                profile_name=creds.aws_profile_name,
+                retry_config=RetryConfig(
+                    attempt=creds.num_retries,
+                    exceptions=(
+                        "ThrottlingException",
+                        "TooManyRequestsException",
+                        "InternalServerException",
+                    ),
+                ),
             )
 
             connection.state = "open"
