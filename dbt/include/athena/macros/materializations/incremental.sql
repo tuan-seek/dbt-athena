@@ -13,6 +13,16 @@
 
 {% macro incremental_insert(tmp_relation, target_relation, statement_name="main") %}
     {%- set dest_columns = adapter.get_columns_in_relation(target_relation) -%}
+    {%- set tmp_columns = adapter.get_columns_in_relation(tmp_relation) -%}
+    {% if dest_columns != tmp_columns %}
+        {% set columns_mismatch_err_msg -%}
+            schema mismatch:
+            dest_columns: {{ dest_columns }}
+            tmp_columns : {{ tmp_columns }}
+            functionality for schema migration not implemented yet
+        {%- endset %}
+        {% do exceptions.raise_not_implemented(columns_mismatch_err_msg) %}
+    {% endif %}
     {%- set dest_cols_csv = dest_columns | map(attribute='quoted') | join(', ') -%}
 
     insert into {{ target_relation }} ({{ dest_cols_csv }})
