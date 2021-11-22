@@ -71,7 +71,7 @@ class AthenaAdapter(SQLAdapter):
 
 
     @available
-    def unique_identity(self, prefix, length=8):
+    def unique_temp_table_suffix(self, suffix_initial='__dbt_tmp', length=8):
         return f"{prefix}_{str(uuid4())[:length]}"
 
 
