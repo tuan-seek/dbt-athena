@@ -79,7 +79,7 @@
   {% set partitioned_by = config.get('partitioned_by', default=none) %}
   {% set target_relation = this.incorporate(type='table') %}
   {% set existing_relation = load_relation(this) %}
-  {% set temp_table_suffix = adapter.unique_identity() %}
+  {% set temp_table_suffix = adapter.unique_temp_table_suffix() %}
   {% set tmp_relation = make_temp_relation(this, suffix=temp_table_suffix) %}
 
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
