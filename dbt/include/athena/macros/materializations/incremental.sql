@@ -16,10 +16,10 @@
     {%- set tmp_columns = adapter.get_columns_in_relation(tmp_relation) -%}
     {% if dest_columns != tmp_columns %}
         {% set columns_mismatch_err_msg -%}
-            schema mismatch:
-            dest_columns: {{ dest_columns }}
-            tmp_columns : {{ tmp_columns }}
-            functionality for schema migration not implemented yet
+            Schema for incremental model does not match schema for the destination table {{target_relation}}:
+            Incremental model schema : {{ tmp_columns }}
+            Destination table schema: {{ dest_columns }}
+            Please update the destination table schema!
         {%- endset %}
         {% do exceptions.raise_not_implemented(columns_mismatch_err_msg) %}
     {% endif %}
