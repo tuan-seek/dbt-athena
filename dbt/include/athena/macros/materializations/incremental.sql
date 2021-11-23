@@ -14,11 +14,13 @@
 {% macro incremental_insert(tmp_relation, target_relation, statement_name="main") %}
     {%- set dest_columns = adapter.get_columns_in_relation(target_relation) -%}
     {%- set tmp_columns = adapter.get_columns_in_relation(tmp_relation) -%}
-    {% if dest_columns != tmp_columns %}
+    {%- set dest_column_names = dest_columns | map(attribute='quoted') | list -%}
+    {%- set tmp_columns_names = tmp_columns | map(attribute='quoted') | list -%}
+    {% if dest_column_names != tmp_columns_names %}
         {% set columns_mismatch_err_msg -%}
             Schema for incremental model does not match schema for the destination table {{target_relation}}:
-            Incremental model schema : {{ tmp_columns }}
-            Destination table schema: {{ dest_columns }}
+            Incremental model schema : {{ tmp_columns_names }}
+            Destination table schema: {{ dest_column_names }}
             Please update the destination table schema!
         {%- endset %}
         {% do exceptions.raise_not_implemented(columns_mismatch_err_msg) %}
