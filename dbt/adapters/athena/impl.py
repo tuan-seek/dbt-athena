@@ -10,7 +10,6 @@ from dbt.adapters.athena import AthenaConnectionManager
 from dbt.adapters.athena.relation import AthenaRelation
 from dbt.logger import GLOBAL_LOGGER as logger
 
-
 class AthenaAdapter(SQLAdapter):
     ConnectionManager = AthenaConnectionManager
     Relation = AthenaRelation
