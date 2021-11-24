@@ -1,14 +1,14 @@
 from uuid import uuid4
- import agate
- import re
- import boto3
- from botocore.exceptions import ClientError
+import agate
+import re
+import boto3
+from botocore.exceptions import ClientError
 
- from dbt.adapters.base import available
- from dbt.adapters.sql import SQLAdapter
- from dbt.adapters.athena import AthenaConnectionManager
- from dbt.adapters.athena.relation import AthenaRelation
- from dbt.logger import GLOBAL_LOGGER as logger
+from dbt.adapters.base import available
+from dbt.adapters.sql import SQLAdapter
+from dbt.adapters.athena import AthenaConnectionManager
+from dbt.adapters.athena.relation import AthenaRelation
+from dbt.logger import GLOBAL_LOGGER as logger
 
 
 class AthenaAdapter(SQLAdapter):
