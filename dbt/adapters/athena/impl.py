@@ -39,7 +39,6 @@ class AthenaAdapter(SQLAdapter):
     def s3_uuid_table_location(self):
         conn = self.connections.get_thread_connection()
         client = conn.handle
-
         return f"{client.s3_staging_dir}tables/{str(uuid4())}/"
 
     @available
@@ -67,6 +66,10 @@ class AthenaAdapter(SQLAdapter):
                 prefix = m.group(2)
                 s3_bucket = s3_resource.Bucket(bucket_name)
                 s3_bucket.objects.filter(Prefix=prefix).delete()
+
+    @available
+    def unique_temp_table_suffix(self, suffix_initial="__dbt_tmp", length=8):
+        return f"{suffix_initial}_{str(uuid4())[:length]}"
 
     @available
     def clean_up_table(
